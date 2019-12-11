@@ -4,8 +4,11 @@ class CollusionsController < ApplicationController
   end
 
   def create
+    Rails.logger.warn(["col", create_collusion.to_json])
+    Rails.logger.warn(["par", changeset_params.to_json])
     if create_collusion.persisted?
       data = CollusionSerializer.new(create_collusion, scope: current_user).as_json
+      Rails.logger.warn(["data", data.to_json])
       MessageBus.publish "/collusions/#{load_post.topic_id}", data
       Collude::Scheduler.new(load_post).schedule!
       render json: data.to_json

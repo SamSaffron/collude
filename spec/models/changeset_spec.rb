@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require './plugins/collude/spec/spec_helper'
 
 describe ::Changeset do

@@ -1,5 +1,5 @@
-module Jobs
-  class Collude < Jobs::Base
+module ::Jobs
+  class Collude < ::Jobs::Base
     def execute(args)
       return unless @post = Post.find_by(id: args[:post_id])
       @post.update(raw: @post.latest_collusion.value)

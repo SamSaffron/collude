@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Collude
   class Applier
     def initialize(changeset, collusion)
@@ -6,11 +8,13 @@ module Collude
     end
 
     def apply!
-      @changeset.changes.reduce("") do |value, change|
-        value + if range = range_from(change)
-          @collusion.value[range]
+      @changeset.changes.reduce('') do |value, change|
+        range = range_from(change)
+
+        if range
+          value + @collusion.value[range]
         else
-          change
+          value + change
         end
       end
     end

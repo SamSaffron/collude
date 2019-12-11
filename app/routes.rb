@@ -1,5 +1,6 @@
+# frozen_string_literal: true
+
 Discourse::Application.routes.append do
-  resources :collusions, only: [:show, :create] do
-    post :toggle, on: :member
-  end
+  put 'posts/:id/collude' => 'posts#toggle_collusion', constraints: StaffConstraint.new
+  get 'posts/:id/latest_collusion' => 'posts#latest_collusion'
 end

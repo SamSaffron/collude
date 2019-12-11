@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Collude
   class Merger
     def initialize(changeset, collusion)
@@ -9,8 +11,8 @@ module Collude
     def merge!
       Changeset.new(
         length_before: @collusion.value.length,
-        length_after:  merged.length,
-        changes:       Array(merged)
+        length_after: merged.length,
+        changes: Array(merged)
       ).apply_to(@collusion)
     end
 
@@ -27,7 +29,11 @@ module Collude
     end
 
     def merged
-      @merged ||= @collusion.value.each_char.with_index.reduce("") do |str, (change, index)|
+      @merged ||= @collusion
+                  .value
+                  .each_char
+                  .with_index
+                  .reduce('') do |str, (change, index)|
         str += change if retain_character?(index)
         str += insertions_after(index)
         str
@@ -46,11 +52,13 @@ module Collude
     end
 
     def insertions_for(changes, index)
-      return unless _index = changes.index(index)
-      "".tap do |result|
-        while changes[_index+1].is_a?(String) do
-          result << changes[_index+1]
-          _index += 1
+      index = changes.index(index)
+      return unless index
+
+      ''.tap do |result|
+        while changes[index + 1].is_a?(String)
+          result << changes[index + 1]
+          index += 1
         end
       end
     end

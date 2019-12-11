@@ -1,23 +1,30 @@
+# frozen_string_literal: true
+
 module Collude
   class Scheduler
-    def initialize(post)
+    def initialize(post, user)
       @post = post
+      @user = user
     end
 
     def schedule!
-      if existing_job
-        existing_job.reschedule(SiteSetting.collude_server_debounce.seconds.from_now)
-        puts "Rescheduling collude job for #{15.seconds.from_now}"
-      else
-        Jobs.enqueue :collude, post_id: @post.id
-      end
-    end
+      debounce_time = SiteSetting.collude_server_debounce
 
-    private
+      DistributedMutex.synchronize("collude_#{@post.id}", validity: debounce_time) do
+        revisor = PostRevisor.new(@post)
 
-    def existing_job
-      @existing_job ||= Sidekiq::ScheduledSet.new.detect do |job|
-        job.item['class'] == 'Jobs::Collude' && job.args['post_id'] == @post.id
+        opts = {
+          bypass_rate_limiter: true,
+          bypass_bump: true,
+          skip_validations: true,
+          skip_revision: true,
+          skip_staff_log: true
+        }
+        changes = {
+          raw: @post.latest_collusion.value
+        }
+
+        revisor.revise!(@user, changes, opts)
       end
     end
   end
