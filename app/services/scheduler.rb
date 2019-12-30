@@ -22,7 +22,6 @@ module Collude
         bypass_rate_limiter: true,
         bypass_bump: true,
         skip_validations: true,
-        skip_revision: true,
         skip_staff_log: true
       }
       changes = {
