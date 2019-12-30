@@ -1,0 +1,11 @@
+nav.post-controls button.collude {
+  color: $primary-medium;
+
+  &:hover {
+    color: $primary
+  }
+
+  .d-icon {
+    color: $primary-medium;
+  }
+}

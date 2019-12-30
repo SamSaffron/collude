@@ -11,21 +11,25 @@ module Collude
       debounce_time = SiteSetting.collude_server_debounce
 
       DistributedMutex.synchronize("collude_#{@post.id}", validity: debounce_time) do
-        revisor = PostRevisor.new(@post)
-
-        opts = {
-          bypass_rate_limiter: true,
-          bypass_bump: true,
-          skip_validations: true,
-          skip_revision: true,
-          skip_staff_log: true
-        }
-        changes = {
-          raw: @post.latest_collusion.value
-        }
-
-        revisor.revise!(@user, changes, opts)
+        revise!
       end
+    end
+
+    def revise!
+      revisor = PostRevisor.new(@post)
+
+      opts = {
+        bypass_rate_limiter: true,
+        bypass_bump: true,
+        skip_validations: true,
+        skip_revision: true,
+        skip_staff_log: true
+      }
+      changes = {
+        raw: @post.latest_collusion.value
+      }
+
+      revisor.revise!(@user, changes, opts)
     end
   end
 end

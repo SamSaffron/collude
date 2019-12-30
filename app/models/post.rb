@@ -23,7 +23,7 @@ class Post
       user: user,
       value: raw,
       version: 1,
-      changeset: ChangesetSerializer.new(initial_changeset).as_json,
+      changeset: initial_changeset,
       post: self
     )
   end

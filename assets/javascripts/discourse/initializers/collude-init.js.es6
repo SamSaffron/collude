@@ -21,14 +21,19 @@ function initWithApi(api) {
       return;
     }
 
-    return {
+    const result = {
       action: COLLUDE_ACTION,
       icon: "far-handshake",
-      label: "collude.collaborate",
       title: "collude.button_title",
       className: "collude create",
       position: "last"
     };
+
+    if (!post.mobileView) {
+      result.label = "collude.collaborate";
+    }
+
+    return result;
   });
 
   api.reopenWidget("post-menu", {
@@ -117,6 +122,7 @@ function initWithApi(api) {
   });
 
   Composer.serializeToDraft("changesets");
+  Composer.serializeToDraft("colludeDone");
 
   api.modifyClass("controller:composer", {
     open(opts) {

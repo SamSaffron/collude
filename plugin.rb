@@ -6,6 +6,10 @@
 
 enabled_site_setting :collude_enabled
 
+%i[common desktop mobile].each do |type|
+  register_asset "stylesheets/collude/#{type}.scss", type
+end
+
 def collude_require(path)
   require_relative File.expand_path("../app/#{path}", __FILE__)
 end

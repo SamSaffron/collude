@@ -75,6 +75,8 @@ const putCollusion = _.debounce(composer => {
 }, Discourse.SiteSettings.collude_debounce);
 
 const teardownCollusion = function(composer) {
+  composer.set("colludeDone", true);
+  performCollusion(composer);
   messageBus().unsubscribe(`/collusions/${composer.get("post.topic_id")}`);
 };
 
