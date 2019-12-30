@@ -25,7 +25,7 @@ function initWithApi(api) {
       action: COLLUDE_ACTION,
       icon: "far-handshake",
       title: "collude.button_title",
-      className: "collude create",
+      className: "collude create fade-out",
       position: "last"
     };
 

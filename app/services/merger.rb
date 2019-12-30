@@ -21,9 +21,9 @@ module Collude
     def expand(changes)
       changes.reduce([]) do |array, change|
         if change[0..1] == 'øø'
-          array += Range.new(*change[2..-1].split('-').map(&:to_i)).to_a
+          array.concat Range.new(*change[2..-1].split('-').map(&:to_i)).to_a
         else
-          array += change.split ''
+          array.concat change.split ''
         end
       end
     end
