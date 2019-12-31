@@ -24,11 +24,21 @@ module Collude
         skip_validations: true,
         skip_staff_log: true
       }
+
+      if !create_new_version?
+        opts[:skip_revision] = true
+      end
+
       changes = {
         raw: @post.latest_collusion.value
       }
 
       revisor.revise!(@user, changes, opts)
+    end
+
+    def create_new_version?
+      last_version_at = @post.last_version_at || Time.now
+      (Time.now - last_version_at) > SiteSetting.editing_grace_period.to_i
     end
   end
 end
