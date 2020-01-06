@@ -25,6 +25,7 @@ module Collude
         skip_staff_log: true
       }
 
+      # let PostRevisor handle revision if false
       if !create_new_version?
         opts[:skip_revision] = true
       end
