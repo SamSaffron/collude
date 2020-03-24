@@ -1,6 +1,6 @@
 # name: collude
 # about: Collaborative document editing for Discourse
-# version: 0.0.2
+# version: 0.0.3
 # authors: James Kiesel (gdpelican)
 # url: https://github.com/gdpelican/collude
 
@@ -21,7 +21,6 @@ after_initialize do
   collude_require 'models/collusion'
   collude_require 'models/post'
   collude_require 'models/draft'
-  # collude_require 'jobs/collude'
   collude_require 'serializers/changeset_serializer'
   collude_require 'serializers/collusion_serializer'
   collude_require 'services/applier'
