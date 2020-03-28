@@ -20,6 +20,8 @@ class PostsController
 
     guardian.ensure_can_collude!(post)
 
+    Collude::Scheduler.new(post, current_user).set_debounce_value
+
     render json: CollusionSerializer.new(post.latest_collusion).as_json
   end
 end

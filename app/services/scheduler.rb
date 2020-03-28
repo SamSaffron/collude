@@ -19,19 +19,25 @@ module Collude
       "#{redis_key}_mutex"
     end
 
+    def set_debounce_value
+      redis.setex(redis_key, debounce_time, 't')
+    end
+
+    def debounce_time
+      SiteSetting.collude_server_debounce
+    end
+
     def can_schedule?
       redis.get(redis_key).blank?
     end
 
     def schedule!
-      if can_schedule?
-        debounce_time = SiteSetting.collude_server_debounce
+      return unless can_schedule?
 
-        DistributedMutex.synchronize(mutex_key, validity: debounce_time) do
-          revise!
+      DistributedMutex.synchronize(mutex_key, validity: debounce_time) do
+        revise!
 
-          redis.setex(redis_key, debounce_time, 't')
-        end
+        set_debounce_value
       end
     end
 
