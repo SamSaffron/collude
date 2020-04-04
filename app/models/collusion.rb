@@ -12,7 +12,7 @@ class Collusion < ActiveRecord::Base
   def self.spawn(post:, user:, changeset:)
     return unless post.can_collude?
 
-    create(
+    create!(
       user: user,
       post: post,
       version: post.latest_collusion.version + 1,

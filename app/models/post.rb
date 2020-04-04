@@ -19,7 +19,7 @@ class Post
   def setup_initial_collusion!
     return unless can_collude?
 
-    Collusion.create(
+    Collusion.create!(
       user: user,
       value: raw,
       version: 1,

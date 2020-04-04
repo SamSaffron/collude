@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCollusions < ActiveRecord::Migration[5.1]
   def up
     if !column_exists?(:post_custom_fields, :collusion)

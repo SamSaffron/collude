@@ -51,13 +51,13 @@ module Collude
       ].join
     end
 
-    def insertions_for(changes, index)
-      index = changes.index(index)
+    def insertions_for(changes, idx)
+      index = changes.index(idx)
       return unless index
 
       ''.tap do |result|
         while changes[index + 1].is_a?(String)
-          result << changes[index + 1]
+          result += changes[index + 1]
           index += 1
         end
       end

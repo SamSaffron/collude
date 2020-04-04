@@ -7,8 +7,7 @@ import {
 import {
   setupCollusion,
   teardownCollusion,
-  performCollusion,
-  toggleCollusion
+  performCollusion
 } from "../lib/collude";
 import Composer from "discourse/models/composer";
 

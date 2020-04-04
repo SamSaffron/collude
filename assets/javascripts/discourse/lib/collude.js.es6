@@ -6,12 +6,8 @@ const messageBus = function() {
   return Discourse.__container__.lookup("message-bus:main");
 };
 
-const store = function() {
-  return Discourse.__container__.lookup("service:store");
-};
-
 // connect to server and request initial document
-const setupCollusion = function(composer) {
+export function setupCollusion(composer) {
   const resolve = data => {
     if (User.currentProp("id") == data.collusion.actor_id) {
       composer.set("changesets.confirmed", data.collusion.changeset);
@@ -34,10 +30,10 @@ const setupCollusion = function(composer) {
   return ajax(`/posts/${composer.get("post.id")}/latest_collusion`).then(
     resolve
   );
-};
+}
 
 // push local changes to the server
-const performCollusion = function(composer) {
+export const performCollusion = function(composer) {
   if (!composer.changesets) {
     return;
   }
@@ -54,31 +50,22 @@ const performCollusion = function(composer) {
   return putCollusion(composer);
 };
 
-const toggleCollusion = function(postId) {
-  return store()
-    .find("post", postId)
-    .then(post => {
-      post.set("collude", !post.collude);
-      return ajax(`/collusions/${post.topic_id}/toggle`, { type: "POST" });
-    });
-};
-
-//// private
-
 const putCollusion = _.debounce(composer => {
   if (_.isEqual(composer.changesets.performed, composer.changesets.submitted)) {
     return;
   }
+  if (!composer.reply) return;
+  if (composer.replyLength < composer.siteSettings.min_post_length) return;
 
   composer.set("changesets.submitted", composer.changesets.performed);
   composer.saveDraft();
 }, Discourse.SiteSettings.collude_debounce);
 
-const teardownCollusion = function(composer) {
+export function teardownCollusion(composer) {
   composer.set("colludeDone", true);
   performCollusion(composer);
   messageBus().unsubscribe(`/collusions/${composer.get("post.topic_id")}`);
-};
+}
 
 const resolveChangeset = function(prev, next) {
   if (_.isEqual(prev, next)) {
@@ -157,5 +144,3 @@ const fullChangesArray = function(changeset) {
     []
   );
 };
-
-export { setupCollusion, teardownCollusion, performCollusion, toggleCollusion };
