@@ -1,19 +1,21 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import {
-  default as computed,
-  on,
-  observes
-} from "discourse-common/utils/decorators";
+import { on, observes } from "discourse-common/utils/decorators";
 import {
   setupCollusion,
   teardownCollusion,
   performCollusion
 } from "../lib/collude";
 import Composer from "discourse/models/composer";
+import { computed } from "@ember/object";
+
+import { SAVE_LABELS, SAVE_ICONS } from "discourse/models/composer";
 
 const COLLUDE_ACTION = "colludeOnTopic";
 
 function initWithApi(api) {
+  SAVE_LABELS[[COLLUDE_ACTION]] = "composer.save_edit";
+  SAVE_ICONS[[COLLUDE_ACTION]] = "pencil-alt";
+
   api.includePostAttributes("collude");
   api.addPostMenuButton("collude", post => {
     if (!post.collude || !post.canEdit) {
@@ -57,14 +59,18 @@ function initWithApi(api) {
   });
 
   api.reopenWidget("post-admin-menu", {
-    html(attrs, state) {
+    html(attrs) {
       const contents = this._super(...arguments);
 
-      if (!this.currentUser.staff || attrs.post_number != 1) {
+      if (
+        !this.currentUser.staff ||
+        attrs.post_number !== 1 ||
+        !contents.children
+      ) {
         return contents;
       }
 
-      contents.push(
+      contents.children.push(
         this.attach("post-admin-menu-button", {
           action: "toggleCollusion",
           icon: "far-handshake",
@@ -94,7 +100,7 @@ function initWithApi(api) {
   });
 
   api.modifyClass("model:composer", {
-    creatingCollusion: Em.computed.equal("action", COLLUDE_ACTION)
+    creatingCollusion: computed.equal("action", COLLUDE_ACTION)
   });
 
   api.modifyClass("controller:topic", {
@@ -126,21 +132,21 @@ function initWithApi(api) {
   api.modifyClass("controller:composer", {
     open(opts) {
       return this._super(opts).then(() => {
-        if (opts.action == COLLUDE_ACTION) {
+        if (opts.action === COLLUDE_ACTION) {
           setupCollusion(this.model);
         }
       });
     },
 
     collapse() {
-      if (this.get("model.action") == COLLUDE_ACTION) {
+      if (this.get("model.action") === COLLUDE_ACTION) {
         return this.close();
       }
       return this._super();
     },
 
     close() {
-      if (this.get("model.action") == COLLUDE_ACTION) {
+      if (this.get("model.action") === COLLUDE_ACTION) {
         teardownCollusion(this.model);
       }
       return this._super();
@@ -155,13 +161,13 @@ function initWithApi(api) {
 
     @observes("model.reply")
     _handleCollusion() {
-      if (this.get("model.action") == COLLUDE_ACTION) {
+      if (this.get("model.action") === COLLUDE_ACTION) {
         performCollusion(this.model);
       }
     },
 
     _saveDraft() {
-      if (this.get("model.action") == COLLUDE_ACTION) {
+      if (this.get("model.action") === COLLUDE_ACTION) {
         return;
       }
       return this._super();

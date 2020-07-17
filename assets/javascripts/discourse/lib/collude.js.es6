@@ -9,7 +9,7 @@ const messageBus = function() {
 // connect to server and request initial document
 export function setupCollusion(composer) {
   const resolve = data => {
-    if (User.currentProp("id") == data.collusion.actor_id) {
+    if (User.currentProp("id") === data.collusion.actor_id) {
       composer.set("changesets.confirmed", data.collusion.changeset);
     } else {
       composer.set("reply", data.collusion.value || "");
@@ -59,7 +59,7 @@ const putCollusion = _.debounce(composer => {
 
   composer.set("changesets.submitted", composer.changesets.performed);
   composer.saveDraft();
-}, Discourse.SiteSettings.collude_debounce);
+}, 500); // TODO get site settings working here
 
 export function teardownCollusion(composer) {
   composer.set("colludeDone", true);
@@ -83,12 +83,12 @@ const resolveChanges = function(prev, next) {
   const _next = fullChangesArray(next);
   return compressChanges(
     _.range(_next.length).map(index => {
-      if (_next[index] == _prev[index]) {
+      if (_next[index] === _prev[index]) {
         return index;
       }
       return (
-        (typeof _next[index] == "string" && _next[index]) ||
-        (typeof _prev[index] == "string" && _prev[index]) ||
+        (typeof _next[index] === "string" && _next[index]) ||
+        (typeof _prev[index] === "string" && _prev[index]) ||
         index
       );
     })
@@ -100,10 +100,10 @@ const compressChanges = function(expanded) {
     expanded,
     (array, change) => {
       let prevMode =
-        (_.last(array) || []).slice(0, 2) == "øø" ? "unchanged" : "changed";
-      let currMode = typeof change == "number" ? "unchanged" : "changed";
+        (_.last(array) || []).slice(0, 2) === "øø" ? "unchanged" : "changed";
+      let currMode = typeof change === "number" ? "unchanged" : "changed";
 
-      if (prevMode == currMode) {
+      if (prevMode === currMode) {
         let curr = array.pop() || [];
         switch (prevMode) {
           case "changed":
@@ -134,9 +134,9 @@ const fullChangesArray = function(changeset) {
   return _.reduce(
     changeset.changes,
     (array, change) => {
-      if (change.slice(0, 2) == "øø") {
+      if (change.slice(0, 2) === "øø") {
         let [b, e] = change.replace("øø", "").split("-");
-        return array.concat(_.range(parseInt(b), parseInt(e) + 1));
+        return array.concat(_.range(parseInt(b, 10), parseInt(e, 10) + 1));
       } else {
         return array.concat(change.split(""));
       }

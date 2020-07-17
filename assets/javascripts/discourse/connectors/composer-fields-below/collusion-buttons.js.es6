@@ -1,7 +1,7 @@
 export default {
   actions: {
     endCollusion() {
-      this.appEvents.trigger('composer:close')
+      this.appEvents.trigger("composer:close");
     }
   }
-}
+};
